@@ -2,7 +2,7 @@ function lab8()
     Q = [1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 0];
     inv(Q)
     c = [0; 0; 0; 0];
-    [X, Y] = dane1();
+    [X, Y] = dane5();
     
 %     Y = -Y
     
@@ -20,7 +20,7 @@ function lab8()
     
     x0 = zeros(4,1);
 
-    e = 1e-12;
+    e = 1e-10;
     ea = 1e-8;
     
     options = optimoptions('quadprog','Display','iter', 'ConstraintTolerance', e, 'OptimalityTolerance', e);
@@ -51,14 +51,14 @@ function lab8()
     
 %     x0 = -ones(size(A,2),1)
     x0 = ones(size(A, 2), 1)
-    [lllambdy, f_opt, exitflagg, it, LL] = IPM(Q, -c, A, b, lb, x0, e, 20, 20)
+    [lllambdy, f_opt, exitflagg, it, LL] = IPM(Q, -c, A, b, lb, x0, e, 100, 100000)
     
     lambda.ineqlin
     norm(lllambdy - x)
     lllambdy
     norm(lambda.ineqlin - lllambdy)
     a;
-    A = X .* Y;;
+    A = X .* Y;
     aa = A * lllambdy;
     
     inds = find(lllambdy > e);

@@ -1,4 +1,4 @@
-function [X,Y]=dane1
+function [X,Y]=dane0
 
 X=[ -1, 1;
     -1, 1;

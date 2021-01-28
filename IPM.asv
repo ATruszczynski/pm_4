@@ -15,11 +15,11 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, lb, x0, e, MAX_IT, M)
     z = r * (X \ eye_n);
     y = ones(m, 1);
     z = ones(n, 1);
-    it = 0;
+    it = 0
     
-    x = -x;
+    x = -x
 %     y = -y
-    z = -z;
+    z = -z
     
     while 1
         X = diag(x);
@@ -30,7 +30,9 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, lb, x0, e, MAX_IT, M)
         
         % krok 1
         
-        
+        if it > MAX_IT
+            exit
+        end
         
         exitflag = checkEndConds(Q, c, A, b, x, y, z, e, M);
         
@@ -42,18 +44,13 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, lb, x0, e, MAX_IT, M)
             disp('Dual unbound')
         end
         
-        if it > MAX_IT
-            exitflag = -3
-            disp('Timed out')
-        end
-        
         if exitflag ~= 0
             break
         end
         
         % krok 2
 %         r = r * dr;
-        r = dr * (z.' * x) / (n + m);
+        r = dr * (z.' * x) / (n + m)
 
         % krok 3
 
