@@ -178,3 +178,7 @@ function flag = checkEndConds(Q, c, A, b, x, y, z, e, M)
     end
     
 end
+
+function sp = startingPoint()
+    
+end
