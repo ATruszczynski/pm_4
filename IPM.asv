@@ -14,14 +14,12 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, e, MAX_IT, M)
     X = diag(x);
 %     y = getLambdas(Q, c, A, b, x, e, r, eye_n);
     y = ones(m, 1);
-    y = zeros(m, 1);
     z = r * (X \ eye_n);
+    y = ones(m, 1);
     
     while 1
         X = diag(x);
         Z = diag(z);
-        
-        warning('off','last') % matlab narzeka na odwracanie prawie zerowych macierzy
         
         % krok 1
         
@@ -65,14 +63,14 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, e, MAX_IT, M)
         delta_y = delta(n+1:n+m, 1);
         
         delta_z = X \ (r * eye_n - X * Z * eye_n - Z * delta_x);
+        delta = [delta; delta_z];
 
         % krok 4
 
         alpha = 1;
+
+        xyz = [x; y; z];
         alphas = [alpha];
-        
-        delta = [delta_x; delta_z];
-        xyz = [x; z];
 
         for i = 1:size(xyz, 1)
             if delta(i, 1) < 0
@@ -88,13 +86,38 @@ function [lambdy, f_opt, exitflag, it, LL]=IPM(Q, c, A, b, e, MAX_IT, M)
         y = y + step * delta_y;
         z = z + step * delta_z;
         
-        f_opt = 1/2 * x.' * Q * x + c.' * x - r * sum(log(x));
+        f_opt = 1/2 * x.' * Q * x + c.' * x - r * sum(log(x))
+        
+        ori = 1
     
-        it = it + 1;
+        it = it + 1
     end
 
-    lambdy = x;
-    LL = [-y; z];
+    lambdy = x
+    LL = [y; z]
+end
+
+function llambda = getLambdas(Q, c, A, b, x, e, r, eye_n)
+   X = diag(x);
+   d = A * x - b;
+   aa = x;
+   llambda = [];
+   ind = [];
+
+    for i = 1:size(A,1)
+        if d(i, :) > -e * 1e4
+            ind = [ind, i];
+        end
+    end
+    
+    L_A = A(ind,:).';
+    L_b = Q * x + c - r * (X \ eye_n);
+    tmp_llambda = linsolve(L_A, L_b);
+
+    llambda = zeros(size(A,1), 1);
+    llambda(ind, :) = tmp_llambda;
+    
+    
 end
 
 function flag = checkEndConds(Q, c, A, b, x, y, z, e, M)
@@ -125,12 +148,19 @@ function flag = checkEndConds(Q, c, A, b, x, y, z, e, M)
 end
 
 function sp = startingPoint(Q, c, A, b, r)
-    n = size(A,2);
+    n = size(A,2)
+    A * ones(n, 1)
     
-    sp = ones(n, 1);
     
-    pos = find(A > 0);
-    neg = find(A < 0);
     
-    sp(neg) = (length(pos))/(length(neg)) * sp(neg);
+    sp = ones(size(A, 2), 1)
+    
+    pos = find(A > 0)
+    neg = find(A < 0)
+    
+    sp(neg) = (length(pos) + 1)/(length(neg)) * sp(neg)
+    
+    A * sp
+    
+    ori = 1
 end
